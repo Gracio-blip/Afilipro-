@@ -11,11 +11,8 @@ const nextConfig: NextConfig = {
     unoptimized: false,
   },
 
-  // Retire les informations inutiles des réponses.
+  // Retire les infos inutiles des headers pour gagner en perf
   poweredByHeader: false,
-
-  // Next.js et Vercel gèrent automatiquement le cache des fichiers statiques.
-  // Ne pas définir Cache-Control ici évite les avertissements Vercel.
 
   // Active l'optimisation pour des bundles plus légers
   experimental: {
