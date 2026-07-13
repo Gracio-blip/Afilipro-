@@ -72,23 +72,23 @@ export default function EarnPage() {
     return [
       {
         id: 1,
-        title: "Rejoindre le groupe WhatsApp",
-        description: "Rejoignez notre groupe officiel WhatsApp pour rester informé",
+        title: "Visiter notre page Facebook",
+        description: "Visitez et aimez notre page Facebook officielle",
         type: "external_link",
         rewardAmount: 150,
-        targetUrl: "https://chat.whatsapp.com/JRWGF3EvpbOKl0fQGeeBnb?s=sw&p=i&ilr=1",
-        instructions: "Cliquez sur le lien et rejoignez le groupe.",
+        targetUrl: "https://facebook.com",
+        instructions: "Cliquez sur le lien, visitez la page et revenez valider.",
         completed: false,
         totalCompletions: 0,
       },
       {
         id: 2,
-        title: "Suivre notre canal Telegram",
-        description: "Suivez notre canal Telegram officiel",
-        type: "telegram",
+        title: "Partager AfiliPro",
+        description: "Partagez AfiliPro avec un ami",
+        type: "custom",
         rewardAmount: 150,
-        targetUrl: "https://t.me/afilipro",
-        instructions: "Cliquez sur le lien et appuyez sur 'Rejoindre'.",
+        targetUrl: null,
+        instructions: "Partagez le lien de parrainage à un ami.",
         completed: false,
         totalCompletions: 0,
       }
@@ -265,7 +265,7 @@ export default function EarnPage() {
                 <p className="text-sm text-violet-100">
                   {dailyQuizClaimed 
                     ? "Revenez demain pour un nouveau quiz !" 
-                    : "Répondez à 3 questions pour gagner 150 FCFA"}
+                    : "50 FCFA par bonne réponse • 150 FCFA pour 3/3"}
                 </p>
               </div>
             </div>

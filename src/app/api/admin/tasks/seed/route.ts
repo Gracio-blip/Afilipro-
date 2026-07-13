@@ -1,35 +1,26 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { earnTasks, type EarnTask } from "@/db/schema";
+import { earnTasks } from "@/db/schema";
 
 export async function POST() {
   try {
-    // Create 2 simple tasks worth 150 FCFA each
-    const tasks: Array<{
-      title: string;
-      description: string;
-      type: "external_link" | "telegram";
-      rewardAmount: number;
-      targetUrl: string;
-      instructions: string;
-      isActive: boolean;
-    }> = [
+    const tasks = [
       {
-        title: "Rejoindre le groupe WhatsApp",
-        description: "Rejoignez notre groupe officiel WhatsApp pour rester informé",
-        type: "external_link",
+        title: "Visiter notre page Facebook",
+        description: "Visitez et aimez notre page Facebook officielle",
+        type: "external_link" as const,
         rewardAmount: 150,
-        targetUrl: "https://chat.whatsapp.com/JRWGF3EvpbOKl0fQGeeBnb?s=sw&p=i&ilr=1",
-        instructions: "Cliquez sur le lien et rejoignez le groupe.",
+        targetUrl: "https://facebook.com",
+        instructions: "Cliquez sur le lien, visitez la page et revenez valider.",
         isActive: true,
       },
       {
-        title: "Suivre notre canal Telegram",
-        description: "Suivez notre canal Telegram officiel",
-        type: "telegram",
+        title: "Partager AfiliPro",
+        description: "Partagez AfiliPro avec un ami",
+        type: "custom" as const,
         rewardAmount: 150,
-        targetUrl: "https://t.me/afilipro",
-        instructions: "Cliquez sur le lien et appuyez sur 'Rejoindre'.",
+        targetUrl: null,
+        instructions: "Partagez le lien de parrainage à un ami.",
         isActive: true,
       },
     ];

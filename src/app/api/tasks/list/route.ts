@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { and, eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { earnTasks, taskCompletions } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
@@ -10,51 +10,51 @@ export async function GET(request: Request) {
   const user = await getCurrentUser(bearerToken);
   if (!user) return NextResponse.json({ error: "Non authentifié." }, { status: 401 });
 
+  // Nettoyer les anciennes tâches interdites (WhatsApp groupe, Telegram canal, TikTok @afilipro, YouTube afilipro sans Bonus)
+  try {
+    await db.execute(sql`
+      UPDATE earn_tasks SET is_active = false 
+      WHERE title ILIKE '%whatsapp%groupe%' 
+      OR title ILIKE '%canal telegram%'
+      OR title ILIKE '%compte tiktok%afilipro%'
+      OR (title ILIKE '%youtube%' AND title NOT ILIKE '%(Bonus)%')
+    `);
+  } catch {}
+
   let tasks = await db.select().from(earnTasks).where(eq(earnTasks.isActive, true)).orderBy(desc(earnTasks.createdAt));
 
-  // Si aucune tâche n'existe, on insère par défaut les 4 tâches à 150 FCFA
-  if (tasks.length === 0) {
-    const defaultTasks = [
+  // Si moins de 2 tâches, créer les 2 tâches quotidiennes à 150 FCFA
+  if (tasks.length < 2) {
+    const needed = 2 - tasks.length;
+    const newTasks = [
       {
-        title: "Rejoindre le groupe WhatsApp",
-        description: "Rejoignez notre groupe officiel WhatsApp pour rester informé",
+        title: "Visiter notre page Facebook",
+        description: "Visitez et aimez notre page Facebook officielle",
         type: "external_link" as const,
         rewardAmount: 150,
-        targetUrl: "https://chat.whatsapp.com/JRWGF3EvpbOKl0fQGeeBnb?s=sw&p=i&ilr=1",
-        instructions: "Cliquez sur le lien et rejoignez le groupe.",
+        targetUrl: "https://facebook.com",
+        instructions: "Cliquez sur le lien, visitez la page et revenez valider.",
         isActive: true,
       },
       {
-        title: "Suivre notre canal Telegram",
-        description: "Suivez notre canal Telegram officiel",
-        type: "telegram" as const,
+        title: "Partager AfiliPro",
+        description: "Partagez AfiliPro avec un ami",
+        type: "custom" as const,
         rewardAmount: 150,
-        targetUrl: "https://t.me/afilipro",
-        instructions: "Cliquez sur le lien et appuyez sur 'Rejoindre'.",
+        targetUrl: null,
+        instructions: "Partagez le lien de parrainage à un ami.",
         isActive: true,
       },
-      {
-        title: "Suivre notre compte TikTok @afilipro",
-        description: "Abonnez-vous à notre compte TikTok officiel",
-        type: "tiktok_follow" as const,
-        rewardAmount: 150,
-        targetUrl: "https://www.tiktok.com",
-        instructions: "Cliquez sur le lien et appuyez sur 'Suivre'.",
-        isActive: true,
-      },
-      {
-        title: "S'abonner à la chaîne YouTube",
-        description: "Abonnez-vous à notre chaîne YouTube officielle",
-        type: "youtube_subscribe" as const,
-        rewardAmount: 150,
-        targetUrl: "https://www.youtube.com",
-        instructions: "Cliquez sur le lien et appuyez sur 'S'abonner'.",
-        isActive: true,
-      },
-    ];
-    await db.insert(earnTasks).values(defaultTasks as any);
-    tasks = await db.select().from(earnTasks).where(eq(earnTasks.isActive, true)).orderBy(desc(earnTasks.createdAt));
+    ].slice(0, needed);
+
+    if (newTasks.length > 0) {
+      await db.insert(earnTasks).values(newTasks as any);
+      tasks = await db.select().from(earnTasks).where(eq(earnTasks.isActive, true)).orderBy(desc(earnTasks.createdAt));
+    }
   }
+
+  // Limiter strictement à 2 tâches comme demandé
+  tasks = tasks.slice(0, 2);
 
   const completions = await db
     .select({ taskId: taskCompletions.taskId })
