@@ -174,6 +174,22 @@ export function DailyQuizModal({ isOpen, onClose, onSuccess }: { isOpen: boolean
                 </div>
               </div>
 
+              {/* Résultat de la réponse */}
+              {isAnswered && (
+                <div className={`mb-4 p-4 rounded-xl border-2 ${isCorrect ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}>
+                  <div className="flex items-center gap-3">
+                    {isCorrect ? (
+                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    ) : (
+                      <AlertCircle className="h-6 w-6 text-red-600" />
+                    )}
+                    <p className={`font-bold text-lg ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                      {isCorrect ? '✓ Réponse vraie !' : '✗ Réponse fausse'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Action Button */}
               <button
                 onClick={isAnswered ? handleNext : handleAnswer}

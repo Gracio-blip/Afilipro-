@@ -146,24 +146,26 @@ export function QuizPlayer({ questions, reward, onComplete }: QuizPlayerProps) {
           })}
         </div>
 
-        {/* Explanation */}
-        {showResult && question.explanation && (
-          <div className={`mt-4 p-4 rounded-xl ${
+        {/* Résultat de la réponse */}
+        {showResult && (
+          <div className={`mt-4 p-4 rounded-xl border-2 ${
             selectedAnswer === question.correctAnswer 
-              ? 'bg-green-50 border border-green-200' 
-              : 'bg-orange-50 border border-orange-200'
+              ? 'bg-green-50 border-green-300' 
+              : 'bg-red-50 border-red-300'
           }`}>
             <div className="flex items-start gap-3">
               {selectedAnswer === question.correctAnswer ? (
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
               ) : (
-                <X className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                <X className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
               )}
               <div>
-                <div className="font-semibold text-gray-900 mb-1">
-                  {selectedAnswer === question.correctAnswer ? 'Correct !' : 'Pas tout à fait...'}
+                <div className={`font-bold text-lg mb-1 ${selectedAnswer === question.correctAnswer ? 'text-green-700' : 'text-red-700'}`}>
+                  {selectedAnswer === question.correctAnswer ? '✓ Réponse vraie !' : '✗ Réponse fausse'}
                 </div>
-                <p className="text-sm text-gray-600">{question.explanation}</p>
+                {question.explanation && (
+                  <p className="text-sm text-gray-600">{question.explanation}</p>
+                )}
               </div>
             </div>
           </div>
