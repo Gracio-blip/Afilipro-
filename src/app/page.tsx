@@ -68,7 +68,7 @@ export default async function HomePage() {
           {[
             { icon: Wallet, title: "Portefeuille digital", desc: "Solde, dépôts, retraits en temps réel" },
             { icon: Users, title: "Parrainage", desc: "300 FCFA par filleul actif" },
-            { icon: Smartphone, title: "Micro-tâches", desc: "Quiz, Telegram, TikTok rémunérés" },
+            { icon: Smartphone, title: "Micro-tâches", desc: "Quiz, Telegram, Jeu des bouteilles, Lucky Spin" },
             { icon: ShieldCheck, title: "Sécurisé", desc: "Validation admin, anti-fraude, historique" },
           ].map((f) => (
             <div key={f.title} className="flex items-center gap-4 rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm">

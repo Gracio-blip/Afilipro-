@@ -95,9 +95,10 @@ export async function seedIfEmpty() {
   const t = await db.select().from(tasks);
   if (t.length === 0) {
     await db.insert(tasks).values([
-      { title: "Quiz quotidien (3 questions)",  description: "3 questions · 50 FCFA chacune · Total 150 FCFA si tout bon", reward: "150", type: "quiz" },
-      { title: "Canal Telegram", description: "Rejoins le canal officiel et reste abonné", reward: "150", type: "telegram" },
-      { title: "Compte TikTok",  description: "Suis le compte partenaire TikTok", reward: "150", type: "tiktok" },
+      { title: "Quiz quotidien",          description: "3 questions · 50 FCFA chacune · 150 FCFA si tout correct", reward: "150", type: "quiz" },
+      { title: "Canal Telegram",          description: "Rejoins le canal officiel et reste abonné",                  reward: "50",  type: "telegram" },
+      { title: "Jeu des bouteilles",      description: "Trouve la bouteille cachant la boule · 100 FCFA si gagné",  reward: "100", type: "bottle" },
+      { title: "Lucky Spin",              description: "Tourne la roue · Gain aléatoire",                            reward: "0",   type: "spin" },
     ]);
   }
 }
@@ -427,18 +428,20 @@ export async function playSpin(): Promise<{ reward: number; message: string; att
 
 // ─────────────────────────────────────────────
 // BOTTLE GAME — cherche la boule sous les bouteilles
-// Gagne 100 FCFA si bon choix, perd sinon
+// Le serveur détermine la position réelle de la boule (anti-triche)
+// Gagne 100 FCFA si bon choix, perd sinon (1/3 de chance)
 // ─────────────────────────────────────────────
 export async function playBottleGame(
   taskId: string,
-  chosen: number,
-  actualBall: number
-): Promise<{ won: boolean; reward: number; message: string }> {
+  chosen: number
+): Promise<{ won: boolean; reward: number; message: string; ballPosition: number }> {
   const current = await getCurrentUser();
-  if (!current) return { won: false, reward: 0, message: "Non connecté" };
-  if (!current.user.isActive) return { won: false, reward: 0, message: "Compte non actif" };
+  if (!current) return { won: false, reward: 0, message: "Non connecté", ballPosition: 0 };
+  if (!current.user.isActive) return { won: false, reward: 0, message: "⛔ Compte non actif — Déposez 2 500 FCFA", ballPosition: 0 };
 
-  const won = chosen === actualBall;
+  // Le serveur choisit la position de la boule de façon indépendante — le client ne peut pas tricher
+  const ballPosition = Math.floor(Math.random() * 3);
+  const won = chosen === ballPosition;
   const reward = won ? 100 : 0;
 
   if (won) {
@@ -458,8 +461,8 @@ export async function playBottleGame(
         });
       });
     }
-    return { won: true, reward, message: "🎉 Bravo ! Vous avez trouvé la boule ! +100 FCFA" };
+    return { won: true, reward, message: "🎉 Bravo ! Vous avez trouvé la boule ! +100 FCFA", ballPosition };
   }
 
-  return { won: false, reward: 0, message: "😔 Raté ! La boule n'était pas là. Réessayez !" };
+  return { won: false, reward: 0, message: "😔 Raté ! La boule n'était pas là. Réessayez !", ballPosition };
 }
