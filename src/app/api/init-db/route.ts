@@ -16,7 +16,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const dbUrl = process.env.DATABASE_URL ?? "";
+  const needsSsl = dbUrl.includes("neon.tech") || dbUrl.includes("supabase") || dbUrl.includes("sslmode=require");
+  const pool = new Pool({
+    connectionString: dbUrl,
+    ssl: needsSsl ? { rejectUnauthorized: false } : undefined,
+  });
   const client = await pool.connect();
 
   try {
